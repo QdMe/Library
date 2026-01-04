@@ -1,0 +1,1 @@
+In this project, I will be building a simple web-based libray that the user will be entring through a prompted form. This, project will test my understanding of the concept of constructors as well as Prototypal inheritance.
