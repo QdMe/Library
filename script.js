@@ -9,10 +9,8 @@ function Book(author, title, numOfPages, id, read) {
   this.id = id;
   this.read = read;
 }
-
-// Add isRead() to Book's prototype
-
-Book.prototype.readStatus = function (book) {
+// Add getReadStatus() to Book's prototype
+Book.prototype.getReadStatus = function (book) {
   if (book.read == "Not Read") {
     book.read = "Read";
   } else if (book.read == "Read") {
@@ -22,6 +20,50 @@ Book.prototype.readStatus = function (book) {
   }
   return book.read;
 };
+const great = new Book(
+  "F. Scott Fitzgerald",
+  "The Great Gatsby",
+  180,
+  "e97f43dd-8f5a-4b78-a5db-5f90342f5d96",
+  "Not Read"
+);
+addBookToLibrary(great);
+const Mockingbird = new Book(
+  "Harper Lee",
+  "To Kill a Mockingbird",
+  324,
+  "cc95c92f-255d-4e4f-8eea-661ebe1db043",
+  "Read"
+);
+addBookToLibrary(Mockingbird);
+const Chemistry = new Book(
+  "Bonnie Garmus",
+  "Lessons in Chemistry",
+  400,
+  "8ed43dcd-e568-4e9f-8e97-f68a2ba3e710",
+  "Read"
+);
+addBookToLibrary(Chemistry);
+const Goldfinch = new Book(
+  "Donna Tartt",
+  "The Goldfinch",
+  771,
+  "51115831-dce3-486f-9776-53cc0c05b822",
+  "Read"
+);
+addBookToLibrary(Goldfinch);
+const War = new Book(
+  "Leo Tolstoy",
+  "War and Peace",
+  1225,
+  "a15e8755-abd1-41f3-8399-05c574939e4e",
+  "Not Read"
+);
+addBookToLibrary(War);
+
+myLibrary.forEach((item) => {
+  displayBook(item);
+});
 
 // Adding the book obj to the array library
 function addBookToLibrary(book) {
@@ -34,25 +76,34 @@ const submitForm = document.querySelector("#submit");
 const title = document.querySelector("#title");
 const author = document.querySelector("#author");
 const numOfPages = document.querySelector("#numOfPages");
-
+const checkbox = document.querySelector("#checkbox");
 showForm.addEventListener("click", () => {
   dialog.showModal();
 });
 
 submitForm.addEventListener("click", () => {
   if (author.value != "" && title.value != "" && numOfPages.value != "") {
+    let read;
+    if (checkbox.checked) {
+      read = "Read";
+    } else {
+      read = "Not Read";
+    }
     const book = new Book(
       author.value,
       title.value,
       numOfPages.value,
-      crypto.randomUUID()
+      crypto.randomUUID(),
+      read
     );
+
     addBookToLibrary(book);
     displayBook(book);
     dialog.close();
     author.value = "";
     title.value = "";
     numOfPages.value = "";
+    checkbox.checked = false;
   }
 });
 
@@ -93,9 +144,9 @@ function displayBook(bookobj) {
 
   // button
   const readBtn = document.createElement("button");
-  readBtn.textContent = bookobj.readStatus(bookobj);
+  readBtn.textContent = bookobj.getReadStatus(bookobj);
   readBtn.addEventListener("click", () => {
-    readBtn.textContent = bookobj.readStatus(bookobj);
+    readBtn.textContent = bookobj.getReadStatus(bookobj);
   });
 
   // remove btn
