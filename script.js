@@ -13,175 +13,138 @@ function Book(author, title, numOfPages, id, read) {
 Book.prototype.getReadStatus = function (book) {
   if (book.read == "Not Read") {
     book.read = "Read";
-  } else if (book.read == "Read") {
-    book.read = "Not Read";
   } else {
     book.read = "Not Read";
   }
   return book.read;
 };
-const great = new Book(
-  "F. Scott Fitzgerald",
-  "The Great Gatsby",
-  180,
-  "e97f43dd-8f5a-4b78-a5db-5f90342f5d96",
-  "Not Read"
+// Create new book function
+function createBook(author, title, numOfPages, id, read) {
+  let newBook = new Book(author, title, numOfPages, id, read);
+  return newBook;
+}
+// Create Sample Books
+addBookToLibrary(
+  createBook(
+    "F. Scott Fitzgerald",
+    "The Great Gatsby",
+    180,
+    crypto.randomUUID(),
+    "Not Read"
+  )
 );
-addBookToLibrary(great);
-const Mockingbird = new Book(
-  "Harper Lee",
-  "To Kill a Mockingbird",
-  324,
-  "cc95c92f-255d-4e4f-8eea-661ebe1db043",
-  "Read"
+addBookToLibrary(
+  createBook(
+    "Harper Lee",
+    "To Kill a Mockingbird",
+    324,
+    crypto.randomUUID(),
+    "Read"
+  )
 );
-addBookToLibrary(Mockingbird);
-const Chemistry = new Book(
-  "Bonnie Garmus",
-  "Lessons in Chemistry",
-  400,
-  "8ed43dcd-e568-4e9f-8e97-f68a2ba3e710",
-  "Read"
+addBookToLibrary(
+  createBook(
+    "Bonnie Garmus",
+    "Lessons in Chemistry",
+    400,
+    crypto.randomUUID(),
+    "Read"
+  )
 );
-addBookToLibrary(Chemistry);
-const Goldfinch = new Book(
-  "Donna Tartt",
-  "The Goldfinch",
-  771,
-  "51115831-dce3-486f-9776-53cc0c05b822",
-  "Read"
+addBookToLibrary(
+  createBook("Donna Tartt", "The Goldfinch", 771, crypto.randomUUID(), "Read")
 );
-addBookToLibrary(Goldfinch);
-const War = new Book(
-  "Leo Tolstoy",
-  "War and Peace",
-  1225,
-  "a15e8755-abd1-41f3-8399-05c574939e4e",
-  "Not Read"
+addBookToLibrary(
+  createBook(
+    "Leo Tolstoy",
+    "War and Peace",
+    1225,
+    crypto.randomUUID(),
+    "Not Read"
+  )
 );
-addBookToLibrary(War);
 
-myLibrary.forEach((item) => {
-  displayBook(item);
+// Adding the book to the library
+function addBookToLibrary(newBook) {
+  myLibrary.push(newBook);
+}
+
+// Displaying the books in the library
+myLibrary.forEach((book) => {
+  displayBook(book);
 });
 
-// Adding the book obj to the array library
-function addBookToLibrary(book) {
-  myLibrary.push(book);
+// The display function
+function displayBook(bookobj) {
+  const container = document.querySelector(".container");
+
+  const bookCard = document.createElement("div");
+  bookCard.classList.add("book");
+  bookCard.setAttribute("data-book-id", bookobj.id);
+  bookCard.innerHTML = `
+  <div class="title">${bookobj.title}</div>
+  <div class="author">${bookobj.author}</div>
+  <div class="numOfPages"><div>${bookobj.numOfPages}</div><div>Pages</div></div>
+  <div class="status"><button>${bookobj.read}</button></div>
+  <div class="remove"><button>Remove</button></div>
+  `;
+  container.appendChild(bookCard);
+
+  // Change-read-status button
+  const readBtn = bookCard.querySelector(".status button");
+  readBtn.dataset.attribute = bookobj.id;
+  console.dir(readBtn);
+  // Add eventListener
+  readBtn.textContent = bookobj.read;
+  readBtn.addEventListener("click", () => {
+    readBtn.textContent = bookobj.getReadStatus(bookobj);
+  });
+
+  // Remove book button
+  const rmvBtn = bookCard.querySelector(".remove button");
+  // Add eventListener to the remove button
+  rmvBtn.addEventListener("click", function () {
+    container.removeChild(bookCard);
+    let bookIndex = myLibrary.findIndex((book) => book.id == bookobj.id);
+    myLibrary.splice(bookIndex, 1);
+  });
 }
-// Form logic
+
+function getReadStatus() {
+  let read;
+  if (checkbox.checked) {
+    read = "Read";
+  } else {
+    read = "Not Read";
+  }
+  return read;
+}
+// Show dialog for user to fill in the book form
 const showForm = document.querySelector("#addBookbtn");
 const dialog = document.querySelector("dialog");
 const submitForm = document.querySelector("#submit");
-const title = document.querySelector("#title");
-const author = document.querySelector("#author");
-const numOfPages = document.querySelector("#numOfPages");
 const checkbox = document.querySelector("#checkbox");
+const form = document.querySelector("form");
 showForm.addEventListener("click", () => {
   dialog.showModal();
 });
 
 submitForm.addEventListener("click", () => {
   if (author.value != "" && title.value != "" && numOfPages.value != "") {
-    let read;
-    if (checkbox.checked) {
-      read = "Read";
-    } else {
-      read = "Not Read";
-    }
-    const book = new Book(
-      author.value,
-      title.value,
-      numOfPages.value,
+    const title = document.querySelector("#title").value;
+    const author = document.querySelector("#author").value;
+    const numOfPages = document.querySelector("#numOfPages").value;
+    let newBook = createBook(
+      author,
+      title,
+      numOfPages,
       crypto.randomUUID(),
-      read
+      getReadStatus()
     );
-
-    addBookToLibrary(book);
-    displayBook(book);
+    addBookToLibrary(newBook);
+    displayBook(newBook);
     dialog.close();
-    author.value = "";
-    title.value = "";
-    numOfPages.value = "";
-    checkbox.checked = false;
+    // checkbox.checked = false;
+    form.reset();
   }
 });
-
-////////////////// Displaying the book ///////////////////
-
-function displayBook(bookobj) {
-  // 1- Reference the container
-  const container = document.querySelector(".container");
-
-  // 2- Create the book card and it's children
-  const book = document.createElement("div");
-  book.classList.add("book");
-  // Give unique ID to the book
-  book.setAttribute("data-attribute", bookobj.id);
-
-  // title
-  const title = document.createElement("div");
-  title.classList.add("title");
-  title.textContent = bookobj.title;
-
-  // author
-  const author = document.createElement("div");
-  author.classList.add("author");
-  author.textContent = bookobj.author;
-
-  // numOfPages
-  const numOfPagesCls = document.createElement("div");
-  numOfPagesCls.classList.add("numOfPages");
-  const numOfPages = document.createElement("div");
-  numOfPages.textContent = bookobj.numOfPages;
-
-  const pages = document.createElement("div");
-  pages.textContent = "Pages";
-
-  // status
-  const readStatus = document.createElement("div");
-  readStatus.classList.add("status");
-
-  // button
-  const readBtn = document.createElement("button");
-  readBtn.textContent = bookobj.getReadStatus(bookobj);
-  readBtn.addEventListener("click", () => {
-    readBtn.textContent = bookobj.getReadStatus(bookobj);
-  });
-
-  // remove btn
-  const remove = document.createElement("div");
-  remove.classList.add("remove");
-
-  const rmvBtn = document.createElement("button");
-  rmvBtn.textContent = "Remove";
-  // Add eventListener
-  rmvBtn.addEventListener("click", function () {
-    container.removeChild(book);
-    let bookIndex = myLibrary.findIndex((book) => book.id == bookobj.id);
-    myLibrary.splice(bookIndex, 1);
-  });
-
-  // Append c1, radio1, label1 to readStatus
-  readStatus.appendChild(readBtn);
-
-  // Append rmvBtn to remove
-  remove.appendChild(rmvBtn);
-
-  // Append title to book
-  book.appendChild(title);
-  // Append author to book
-  book.appendChild(author);
-  // Append "numOfPages" to numbOfPagesCls
-  numOfPagesCls.appendChild(numOfPages);
-  // Append "Pages" to numbOfPagesCls
-  numOfPagesCls.appendChild(pages);
-  // Append numOfPages to book
-  book.appendChild(numOfPagesCls);
-  // Append readStatus to book
-  book.appendChild(readStatus);
-  // Append remove to book
-  book.appendChild(remove);
-  // Append book to .container
-  container.appendChild(book);
-}
