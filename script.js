@@ -1,73 +1,64 @@
 // Library array
 const myLibrary = [];
 
-// Book constructor
-function Book(author, title, numOfPages, id, read) {
-  this.author = author;
-  this.title = title;
-  this.numOfPages = numOfPages;
-  this.id = id;
-  this.read = read;
-}
-// Add getReadStatus() to Book's prototype
-Book.prototype.getReadStatus = function (book) {
-  if (book.read == "Not Read") {
-    book.read = "Read";
-  } else {
-    book.read = "Not Read";
+// Book class
+class Book {
+  constructor(author, title, numOfPages, id, read) {
+    this.author = author;
+    this.title = title;
+    this.numOfPages = numOfPages;
+    this.id = id;
+    this.read = read;
   }
-  return book.read;
-};
-// Create new book function
-function createBook(author, title, numOfPages, id, read) {
-  let newBook = new Book(author, title, numOfPages, id, read);
-  return newBook;
+  addBookToLibrary() {
+    myLibrary.push(this);
+  }
+  getReadStatus() {
+    if (this.read == "Not Read") {
+      this.read = "Read";
+    } else {
+      this.read = "Not Read";
+    }
+    return this.read;
+  }
 }
-// Create Sample Books
-addBookToLibrary(
-  createBook(
-    "F. Scott Fitzgerald",
-    "The Great Gatsby",
-    180,
-    crypto.randomUUID(),
-    "Not Read"
-  )
-);
-addBookToLibrary(
-  createBook(
-    "Harper Lee",
-    "To Kill a Mockingbird",
-    324,
-    crypto.randomUUID(),
-    "Read"
-  )
-);
-addBookToLibrary(
-  createBook(
-    "Bonnie Garmus",
-    "Lessons in Chemistry",
-    400,
-    crypto.randomUUID(),
-    "Read"
-  )
-);
-addBookToLibrary(
-  createBook("Donna Tartt", "The Goldfinch", 771, crypto.randomUUID(), "Read")
-);
-addBookToLibrary(
-  createBook(
-    "Leo Tolstoy",
-    "War and Peace",
-    1225,
-    crypto.randomUUID(),
-    "Not Read"
-  )
-);
 
-// Adding the book to the library
-function addBookToLibrary(newBook) {
-  myLibrary.push(newBook);
-}
+// Sample Book objects
+const Fitzgerald = new Book(
+  "F. Scott Fitzgerald",
+  "The Great Gatsby",
+  180,
+  crypto.randomUUID(),
+  "Not Read",
+);
+Fitzgerald.addBookToLibrary();
+
+const Mockingbird = new Book(
+  "Harper Lee",
+  "To Kill a Mockingbird",
+  324,
+  crypto.randomUUID(),
+  "Read",
+);
+Mockingbird.addBookToLibrary();
+
+const Chemistry = new Book(
+  "Bonnie Garmus",
+  "Lessons in Chemistry",
+  400,
+  crypto.randomUUID(),
+  "Read",
+);
+Chemistry.addBookToLibrary();
+
+const Peace = new Book(
+  "Leo Tolstoy",
+  "War and Peace",
+  1225,
+  crypto.randomUUID(),
+  "Not Read",
+);
+Peace.addBookToLibrary();
 
 // Displaying the books in the library
 myLibrary.forEach((book) => {
@@ -97,7 +88,7 @@ function displayBook(bookobj) {
   // Add eventListener
   readBtn.textContent = bookobj.read;
   readBtn.addEventListener("click", () => {
-    readBtn.textContent = bookobj.getReadStatus(bookobj);
+    readBtn.textContent = bookobj.getReadStatus();
   });
 
   // Remove book button
@@ -110,7 +101,7 @@ function displayBook(bookobj) {
   });
 }
 
-function getReadStatus() {
+function setReadStatus() {
   let read;
   if (checkbox.checked) {
     read = "Read";
@@ -119,32 +110,60 @@ function getReadStatus() {
   }
   return read;
 }
+
 // Show dialog for user to fill in the book form
 const showForm = document.querySelector("#addBookbtn");
 const dialog = document.querySelector("dialog");
 const submitForm = document.querySelector("#submit");
 const checkbox = document.querySelector("#checkbox");
 const form = document.querySelector("form");
+
+// For showing custom error validation
+const bookTitle = document.querySelector("#title");
+const bookAuthor = document.querySelector("#author");
+const booknumOfPages = document.querySelector("#numOfPages");
+function checkInputValidity() {
+  bookTitle.setCustomValidity("");
+  bookAuthor.setCustomValidity("");
+  booknumOfPages.setCustomValidity("");
+  if (bookTitle.value == "") {
+    bookTitle.setCustomValidity("The book's title must be filled!");
+  }
+
+  if (bookAuthor.value == "") {
+    bookAuthor.setCustomValidity("The author name must be filled!");
+  }
+
+  if (booknumOfPages.value < 1) {
+    booknumOfPages.setCustomValidity("The number of pages must be at least 1!");
+  }
+}
+// We call the checkInputValidity eveytime the user inputs data
+bookTitle.addEventListener("input", checkInputValidity);
+bookAuthor.addEventListener("input", checkInputValidity);
+booknumOfPages.addEventListener("input", checkInputValidity);
+
 showForm.addEventListener("click", () => {
   dialog.showModal();
 });
 
 submitForm.addEventListener("click", () => {
+  // As well as when the form submits
+  checkInputValidity();
   if (author.value != "" && title.value != "" && numOfPages.value != "") {
     const title = document.querySelector("#title").value;
     const author = document.querySelector("#author").value;
     const numOfPages = document.querySelector("#numOfPages").value;
-    let newBook = createBook(
+    let newBook = new Book(
       author,
       title,
       numOfPages,
       crypto.randomUUID(),
-      getReadStatus()
+      setReadStatus(),
     );
-    addBookToLibrary(newBook);
+    newBook.addBookToLibrary();
     displayBook(newBook);
     dialog.close();
-    // checkbox.checked = false;
     form.reset();
   }
 });
